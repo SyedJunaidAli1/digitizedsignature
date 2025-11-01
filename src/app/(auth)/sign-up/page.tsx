@@ -1,7 +1,15 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 const page = () => {
+  const googleSignIn = async () => {
+    const data = await authClient.signIn.social({
+      provider: "google",
+    });
+  };
+  
   return (
     <>
       <main>
@@ -13,7 +21,11 @@ const page = () => {
                 Sign up to your account using your preferred provider
               </p>
               <div className="pace-y-2 mb-4">
-                <Button className="w-full">
+                <Button
+                  className="w-full cursor-pointer"
+                  variant="secondary"
+                  onClick={() => googleSignIn()}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 50 50"
