@@ -15,8 +15,8 @@ const KeyboardSignature = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Drawing Constants
-  const SCALE = 100;
-  const OFFSET_X = 50;
+  const SCALE = 80;
+  const OFFSET_X = 0;
   const OFFSET_Y = 50;
 
   useEffect(() => {
@@ -25,27 +25,46 @@ const KeyboardSignature = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Use the layout data from your constants.ts
+    // Optional: Merge numberRow if you want to show 1,2,3...
     const currentLayoutData = keyboardLayouts[layout];
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. Draw Keyboard Background
+    // 1. Draw Keyboard Background (Curved Squares)
     Object.keys(currentLayoutData).forEach((key) => {
       const pos = currentLayoutData[key];
       const x = pos.x * SCALE + OFFSET_X;
       const y = pos.y * SCALE + OFFSET_Y;
       const isActive = text.toUpperCase().includes(key);
 
+      const size = 40; // The width/height of the key
+      const radius = 10; // The "curvature" of the square
+
       ctx.beginPath();
-      ctx.arc(x, y, 15, 0, Math.PI * 2);
+      // We center the square by subtracting half the size from X and Y
+      ctx.roundRect(x - size / 2, y - size / 2, size, size, radius);
+
       ctx.fillStyle = isActive
         ? "rgba(99, 102, 241, 0.2)"
-        : "rgba(255, 255, 255, 0.02)";
+        : "rgba(255, 255, 255, 0.03)";
       ctx.fill();
+
+      // Add a subtle border to the keycap
+      ctx.strokeStyle = isActive
+        ? "rgba(99, 102, 241, 0.5)"
+        : "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Draw the Letter Label
+      ctx.font = "bold 12px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = isActive ? "#818cf8" : "#6941d9";
+      ctx.fillText(key, x, y);
     });
 
-    // 2. Draw Signature Path using your generatePath logic
+    // 2. Draw Signature Path
     const points = text
       .toUpperCase()
       .split("")
@@ -53,18 +72,15 @@ const KeyboardSignature = () => {
       .filter((p) => !!p);
 
     if (points.length >= 2) {
-      // Map your logical coordinates to Canvas pixels
       const pixelPoints = points.map((p) => ({
         x: p.x * SCALE + OFFSET_X,
         y: p.y * SCALE + OFFSET_Y,
       }));
 
-      // Get the SVG Path string from your logic
       const pathData = generatePath(pixelPoints, curveType);
-
-      // Draw the path to Canvas
       const path = new Path2D(pathData);
 
+      // Line Styling
       ctx.shadowBlur = 15;
       ctx.shadowColor = "#6366f1";
       ctx.strokeStyle = "#6366f1";
@@ -72,12 +88,15 @@ const KeyboardSignature = () => {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.stroke(path);
+
+      // Reset shadow so it doesn't affect future draws
+      ctx.shadowBlur = 0;
     }
   }, [text, layout, curveType]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <div className="max-w-4xl w-full space-y-6">
+      <div className="max-w-5xl w-full space-y-6">
         <div>
           <Options
             layout={layout}
@@ -87,10 +106,10 @@ const KeyboardSignature = () => {
           />
         </div>
 
-        <div className="border rounded-3xl p-10 backdrop-blur-md">
+        <div className="border rounded-3xl px-2 py-8 backdrop-blur-md">
           <canvas
             ref={canvasRef}
-            width={750}
+            width={800}
             height={300}
             className="w-full h-auto"
           />
