@@ -6,12 +6,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface OptionsProps {
   layout: KeyboardLayout;
   setLayout: (l: KeyboardLayout) => void;
   curveType: CurveType;
   setCurveType: (c: CurveType) => void;
+  includeNumbers: boolean;
+  setIncludeNumbers: (v: boolean) => void;
 }
 
 const Options = ({
@@ -19,6 +23,8 @@ const Options = ({
   setLayout,
   curveType,
   setCurveType,
+  includeNumbers,
+  setIncludeNumbers,
 }: OptionsProps) => {
   const curveOptions: CurveType[] = [
     "linear",
@@ -37,7 +43,7 @@ const Options = ({
           value={layout}
           onValueChange={(v) => setLayout(v as KeyboardLayout)}
         >
-          <SelectTrigger className="w-[140px]  ">
+          <SelectTrigger className="w-35">
             <SelectValue placeholder="Select Layout" />
           </SelectTrigger>
           <SelectContent>
@@ -48,6 +54,18 @@ const Options = ({
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Inside Options.tsx */}
+      <div className="flex items-center gap-3 border-l border-neutral-800 pl-8">
+        <Label htmlFor="numbers" className="text-sm font-medium">
+          Numbers
+        </Label>
+        <Switch
+          id="numbers"
+          checked={includeNumbers}
+          onCheckedChange={(checked) => setIncludeNumbers(checked)}
+        />
       </div>
 
       {/* 2. Curve Selection (Your New Custom Implementation) */}
