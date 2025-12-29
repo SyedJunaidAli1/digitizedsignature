@@ -78,7 +78,7 @@ const KeyboardSignature = () => {
       const path = new Path2D(pathData);
 
       // Apply the styles from state
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = 8;
       ctx.shadowColor = color; // Glow matches the line color
       ctx.strokeStyle = color; // Line matches the picker
       ctx.lineWidth = strokeWidth; // Width matches the slider

@@ -67,7 +67,7 @@ const Options = ({
       </div>
 
       {/* Inside Options.tsx */}
-      <div className="flex items-center gap-3 border-l border-neutral-800 pl-8">
+      <div className="flex items-center gap-3 border-l  pl-4">
         <Label htmlFor="numbers" className="text-sm font-medium">
           Numbers
         </Label>
@@ -79,12 +79,10 @@ const Options = ({
       </div>
 
       {/* Style Section */}
-      <div className="flex items-center gap-4 border-l border-neutral-800 pl-6">
+      <div className="flex items-center gap-4 border-l pl-4">
         <div className="flex flex-col gap-1.5">
-          <p className="text-[10px] uppercase tracking-widest font-bold">
-            Color
-          </p>
-          <div className="flex items-center gap-4">
+          <p className="text-sm uppercase tracking-widest font-bold">Color</p>
+          <div className="flex items-center gap-2">
             <ColorPicker value={color} onChange={setColor} />
             <label htmlFor="stroke-width">Width:</label>
             <Slider
@@ -95,6 +93,7 @@ const Options = ({
               step={0.5}
               className="w-30"
             />
+            <p>{strokeWidth}px</p>
           </div>
         </div>
       </div>
