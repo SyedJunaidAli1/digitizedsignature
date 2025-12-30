@@ -127,10 +127,10 @@ const Options = ({
             onValueChange={(v) => setStrokeWidth(v[0])}
             max={8}
             min={2}
-            step={0.5}
+            step={1}
             className="w-24"
           />
-          <p className="text-xs font-mono w-8">{strokeWidth}</p>
+          <p className="text-xs font-mono w-8">{strokeWidth}px</p>
         </div>
       </div>
 
