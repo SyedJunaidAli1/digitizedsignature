@@ -2,11 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import {
   KeyboardLayout,
-  keyboardLayouts,
   generatePath,
   CurveType,
   getKeyboardLayout,
-  numberRow,
 } from "@/lib/util/constant";
 import Options from "@/app/components/Options";
 
