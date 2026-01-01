@@ -30,86 +30,119 @@ const KeyboardSignature = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // 1. Setup Data & Clear Canvas
+    // 1. GET COLORS FROM YOUR GLOBAL.CSS
+    const rootStyle = getComputedStyle(document.documentElement);
+
+    // Helper to get variable values
+    const getVar = (name: string) => rootStyle.getPropertyValue(name).trim();
+
+    const colors = {
+      background: getVar("--background"),
+      foreground: getVar("--foreground"),
+      muted: getVar("--muted"),
+      mutedForeground: getVar("--muted-foreground"),
+      border: getVar("--border"),
+      accent: getVar("--accent"),
+    };
+
     const currentLayoutData = getKeyboardLayout(layout, includeNumbers);
-    const DRAW_OFFSET_Y = includeNumbers ? OFFSET_Y + 60 : OFFSET_Y;
+    const DRAW_OFFSET_Y = includeNumbers ? OFFSET_Y + 70 : OFFSET_Y;
+
+    // 2. GEOMETRY (Matching your "spacious" photo)
+    const KEY_SIZE = 56;
+    const RADIUS = 12;
+    const SPACING = 62; // Large gaps between keys
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 2. Draw Keyboard Background (Keys)
+    // 3. DRAW KEYS
     Object.keys(currentLayoutData).forEach((key) => {
       const pos = currentLayoutData[key];
-      const x = pos.x * SCALE + OFFSET_X;
-      const y = pos.y * SCALE + DRAW_OFFSET_Y;
+      const x = pos.x * SPACING + OFFSET_X;
+      const y = pos.y * SPACING + DRAW_OFFSET_Y;
+
       const isActive = text.toUpperCase().includes(key);
+      const isLatest = text.toUpperCase().endsWith(key);
 
-      const size = 36;
       ctx.beginPath();
-      ctx.roundRect(x - size / 2, y - size / 2, size, size, 8);
+      ctx.roundRect(
+        x - KEY_SIZE / 2,
+        y - KEY_SIZE / 2,
+        KEY_SIZE,
+        KEY_SIZE,
+        RADIUS,
+      );
 
-      // Indigo glow for active keys, subtle white for inactive
-      ctx.fillStyle = isActive
-        ? "rgba(99, 102, 241, 0.2)"
-        : "rgba(255, 255, 255, 0.03)";
+      if (isLatest) {
+        // THE "HIT" STATE (When you type it)
+        ctx.fillStyle = colors.accent;
+        ctx.strokeStyle = color; // Your selected signature color
+        ctx.lineWidth = 2;
+      } else if (isActive) {
+        // PART OF THE SIGNATURE
+        ctx.fillStyle = colors.background;
+        ctx.strokeStyle = colors.border;
+        ctx.lineWidth = 1;
+      } else {
+        // DEFAULT STATE
+        ctx.fillStyle = colors.background;
+        ctx.globalAlpha = 0.4; // Make inactive keys slightly more subtle
+        ctx.strokeStyle = colors.border;
+        ctx.lineWidth = 1;
+      }
+
       ctx.fill();
+      ctx.globalAlpha = 1.0; // Reset alpha
+      ctx.stroke();
 
-      // Key Labels
-      ctx.font = "bold 12px Inter";
+      // DRAW LABELS (Centered exactly like your photo)
+      ctx.font = "600 16px var(--font-sans)"; // Uses your Geist Sans font
       ctx.textAlign = "center";
-      ctx.fillStyle = isActive ? "#818cf8" : "#3f3f46";
-      ctx.fillText(key, x, y + 5);
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = isActive ? colors.foreground : colors.mutedForeground;
+
+      ctx.fillText(key, x, y);
     });
 
-    // 3. Prepare Signature Points
+    // 4. DRAW SIGNATURE PATH
     const points = text
       .toUpperCase()
       .split("")
       .map((char) => currentLayoutData[char])
       .filter((p) => !!p);
 
-    // 4. Draw Signature Path (Only if 2+ points exist)
     if (points.length >= 2) {
       const pixelPoints = points.map((p) => ({
-        x: p.x * SCALE + OFFSET_X,
-        y: p.y * SCALE + DRAW_OFFSET_Y,
+        x: p.x * SPACING + OFFSET_X,
+        y: p.y * SPACING + DRAW_OFFSET_Y,
       }));
 
       const pathData = generatePath(pixelPoints, curveType);
       const path = new Path2D(pathData);
 
-      // Set Common Styles
-      ctx.lineWidth = strokeWidth;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
+      ctx.lineWidth = strokeWidth;
+
+      // Add signature glow
+      ctx.shadowBlur = 18;
       ctx.shadowColor = color;
 
-      // Handle Gradient vs Solid
       if (strokeStyle === "gradient") {
-        const xCoords = pixelPoints.map((p) => p.x);
-        const yCoords = pixelPoints.map((p) => p.y);
-
-        const minX = Math.min(...xCoords);
-        const maxX = Math.max(...xCoords);
-        const minY = Math.min(...yCoords);
-        const maxY = Math.max(...yCoords);
-
-        // Create a diagonal gradient from the start of the word to the end
-        // We add +1 to avoid division by zero errors on single letters
-        const grad = ctx.createLinearGradient(minX, minY, maxX + 1, maxY + 1);
-
-        grad.addColorStop(0, color); // Starts with Color 1
-        grad.addColorStop(1, color2); // Ends with Color 2
-
+        const grad = ctx.createLinearGradient(
+          pixelPoints[0].x,
+          pixelPoints[0].y,
+          pixelPoints[pixelPoints.length - 1].x,
+          pixelPoints[pixelPoints.length - 1].y,
+        );
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, color2);
         ctx.strokeStyle = grad;
-        // ctx.shadowColor = color; // You can also blend shadow colors, but sticking to one is cleaner
       } else {
         ctx.strokeStyle = color;
-        ctx.shadowColor = color;
       }
-      // Final Single Stroke
-      ctx.stroke(path);
 
-      // Reset Shadow so it doesn't affect other drawings
+      ctx.stroke(path);
       ctx.shadowBlur = 0;
     }
   }, [
@@ -125,7 +158,7 @@ const KeyboardSignature = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <div className="max-w-5xl w-full space-y-6">
+      <div className="flex flex-col items-center justify-center w-auto">
         <Options
           layout={layout}
           setLayout={setLayout}
@@ -142,22 +175,19 @@ const KeyboardSignature = () => {
           color2={color2}
           setColor2={setColor2}
         />
-
-        <div className="border rounded-3xl px-2 py-8 backdrop-blur-md">
-          <canvas
-            ref={canvasRef}
-            width={800}
-            height={300}
-            className="w-full h-auto"
-          />
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Enter your name..."
-            className="w-full mt-10  border-b py-4 text-3xl text-center focus:outline-none focus:border-primary transition-all font-light tracking-widest"
-          />
-        </div>
+        <canvas
+          ref={canvasRef}
+          width={620}
+          height={300}
+          className="w-auto h-auto"
+        />
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Enter your name"
+          className="border-b text-2xl text-center text-primary focus:outline-none focus:border-primary transition-all font-light tracking-widest"
+        />
       </div>
     </div>
   );
