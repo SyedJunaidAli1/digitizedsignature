@@ -10,19 +10,14 @@ import { Switch } from "components/ui/switch";
 import { Label } from "components/ui/label";
 import { ColorPicker } from "./ColorPicker";
 import { Slider } from "components/ui/slider";
-import {
-  ChevronDown,
-  Keyboard,
-  MoveRight,
-  Palette,
-  Settings2,
-} from "lucide-react";
+import { ChevronDown, Keyboard, Palette, Settings2 } from "lucide-react";
 import { Button } from "components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 interface OptionsProps {
   layout: KeyboardLayout;
@@ -68,7 +63,7 @@ const Options = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2 rounded-xl backdrop-blur-md">
+        <Button variant="outline">
           <Settings2 className="w-4 h-4" />
           <span>Options</span>
           <ChevronDown className="w-3 h-3 opacity-50" />
@@ -128,13 +123,16 @@ const Options = ({
               <Label className="text-xs">Style</Label>
               <div className="flex p-0.5 rounded-md border">
                 {(["solid", "gradient"] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setStrokeStyle(s)}
-                    className="px-3 py-1 text-[10px] uppercase font-bold rounded-sm transition-all"
-                  >
-                    {s}
-                  </button>
+                  <ButtonGroup aria-label="Button group" key={s}>
+                    <Button
+                      key={s}
+                      onClick={() => setStrokeStyle(s)}
+                      variant={"ghost"}
+                      className="uppercase text-xs"
+                    >
+                      {s}
+                    </Button>
+                  </ButtonGroup>
                 ))}
               </div>
             </div>
@@ -195,7 +193,7 @@ const Options = ({
         <Button
           variant="ghost"
           size="sm"
-          className="w-full mt-4 text-[10px] uppercase tracking-widest"
+          className="w-full text-sm "
           onClick={() => {
             setLayout("qwerty");
             setIncludeNumbers(false);
