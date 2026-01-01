@@ -126,24 +126,22 @@ const KeyboardSignature = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
       <div className="max-w-5xl w-full space-y-6">
-        <div>
-          <Options
-            layout={layout}
-            setLayout={setLayout}
-            curveType={curveType}
-            setCurveType={setCurveType}
-            includeNumbers={includeNumbers}
-            setIncludeNumbers={setIncludeNumbers}
-            color={color}
-            setColor={setColor}
-            strokeWidth={strokeWidth}
-            setStrokeWidth={setStrokeWidth}
-            strokeStyle={strokeStyle}
-            setStrokeStyle={setStrokeStyle}
-            color2={color2}
-            setColor2={setColor2}
-          />
-        </div>
+        <Options
+          layout={layout}
+          setLayout={setLayout}
+          curveType={curveType}
+          setCurveType={setCurveType}
+          includeNumbers={includeNumbers}
+          setIncludeNumbers={setIncludeNumbers}
+          color={color}
+          setColor={setColor}
+          strokeWidth={strokeWidth}
+          setStrokeWidth={setStrokeWidth}
+          strokeStyle={strokeStyle}
+          setStrokeStyle={setStrokeStyle}
+          color2={color2}
+          setColor2={setColor2}
+        />
 
         <div className="border rounded-3xl px-2 py-8 backdrop-blur-md">
           <canvas
@@ -156,7 +154,7 @@ const KeyboardSignature = () => {
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Type your signature..."
+            placeholder="Enter your name..."
             className="w-full mt-10  border-b py-4 text-3xl text-center focus:outline-none focus:border-primary transition-all font-light tracking-widest"
           />
         </div>
