@@ -20,7 +20,6 @@ const KeyboardSignature = () => {
   const [strokeStyle, setStrokeStyle] = useState<"solid" | "gradient">("solid");
 
   // Drawing Constants
-  const SCALE = 80;
   const OFFSET_X = 0;
   const OFFSET_Y = 50;
 
@@ -32,8 +31,6 @@ const KeyboardSignature = () => {
 
     // 1. GET COLORS FROM YOUR GLOBAL.CSS
     const rootStyle = getComputedStyle(document.documentElement);
-
-    // Helper to get variable values
     const getVar = (name: string) => rootStyle.getPropertyValue(name).trim();
 
     const colors = {
@@ -48,10 +45,10 @@ const KeyboardSignature = () => {
     const currentLayoutData = getKeyboardLayout(layout, includeNumbers);
     const DRAW_OFFSET_Y = includeNumbers ? OFFSET_Y + 70 : OFFSET_Y;
 
-    // 2. GEOMETRY (Matching your "spacious" photo)
+    // 2. GEOMETRY (Using your refined UI values)
     const KEY_SIZE = 56;
     const RADIUS = 8;
-    const SPACING = 62; // Large gaps between keys
+    const SPACING = 62;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -74,29 +71,29 @@ const KeyboardSignature = () => {
       );
 
       if (isLatest) {
-        // THE "HIT" STATE (When you type it)
+        // THE "HIT" STATE: Transition feel
         ctx.fillStyle = colors.accent;
-        ctx.strokeStyle = color; // Your selected signature color
+        ctx.strokeStyle = color;
         ctx.lineWidth = 2;
       } else if (isActive) {
-        // PART OF THE SIGNATURE
+        // PART OF THE SIGNATURE: Active but not the current "hit"
         ctx.fillStyle = colors.background;
         ctx.strokeStyle = colors.border;
         ctx.lineWidth = 1;
       } else {
         // DEFAULT STATE
         ctx.fillStyle = colors.background;
-        ctx.globalAlpha = 0.4; // Make inactive keys slightly more subtle
+        ctx.globalAlpha = 0.4; // Subtle inactive look
         ctx.strokeStyle = colors.border;
         ctx.lineWidth = 1;
       }
 
       ctx.fill();
-      ctx.globalAlpha = 1.0; // Reset alpha
+      ctx.globalAlpha = 1.0;
       ctx.stroke();
 
-      // DRAW LABELS (Centered exactly like your photo)
-      ctx.font = "600 16px var(--font-sans)"; // Uses your Geist Sans font
+      // DRAW LABELS: Centered as per your photo
+      ctx.font = "600 16px var(--font-sans)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = isActive ? colors.foreground : colors.mutedForeground;
@@ -124,17 +121,31 @@ const KeyboardSignature = () => {
       ctx.lineJoin = "round";
       ctx.lineWidth = strokeWidth;
 
-      // Add signature glow
-      ctx.shadowBlur = 18;
+      // Signature glow
+      ctx.shadowBlur = 2;
       ctx.shadowColor = color;
 
       if (strokeStyle === "gradient") {
+        // FIX: Calculate the bounding box of the whole path
+        const xCoords = pixelPoints.map((p) => p.x);
+        const yCoords = pixelPoints.map((p) => p.y);
+
+        const minX = Math.min(...xCoords);
+        const maxX = Math.max(...xCoords);
+        const minY = Math.min(...yCoords);
+        const maxY = Math.max(...yCoords);
+
+        /**
+         * BUG FIX: If you start and end on the same key, maxX === minX.
+         * A 0-length gradient is invisible. We add a 1px buffer to force visibility.
+         */
         const grad = ctx.createLinearGradient(
-          pixelPoints[0].x,
-          pixelPoints[0].y,
-          pixelPoints[pixelPoints.length - 1].x,
-          pixelPoints[pixelPoints.length - 1].y,
+          minX,
+          minY,
+          maxX === minX ? maxX + 1 : maxX,
+          maxY === minY ? maxY + 1 : maxY,
         );
+
         grad.addColorStop(0, color);
         grad.addColorStop(1, color2);
         ctx.strokeStyle = grad;
@@ -182,12 +193,7 @@ const KeyboardSignature = () => {
           placeholder="Enter your name"
           className="border-b text-2xl mt-2 text-center text-primary focus:outline-none focus:border-primary transition-all font-light tracking-widest"
         />
-        <canvas
-          ref={canvasRef}
-          width={620}
-          height={300}
-          className="w-auto h-auto"
-        />
+        <canvas ref={canvasRef} width={680} height={300} />
       </div>
     </div>
   );
