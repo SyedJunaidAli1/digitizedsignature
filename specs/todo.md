@@ -6,5 +6,5 @@ todos
 - [] footer small
 - [x] option better Ui/Ux
 - [] change the useeffect
-- [] add motion from animation 
-- [] motion keyboard fade after 2 sec if no activity on keyboard
+- [x] add motion from animation 
+- [x] motion keyboard fade after 2 sec if no activity on keyboard
