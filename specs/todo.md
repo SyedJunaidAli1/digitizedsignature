@@ -1,8 +1,9 @@
 todos
 
-- [] implement save as png button
-- [] implement save as svg button
-- [] implement github button
+- [x] implement save as png button
+- [x] implement save as svg button
+- [x] implement github button
+- [] download button improvement
 - [] footer small
 - [x] option better Ui/Ux
 - [] change the useeffect

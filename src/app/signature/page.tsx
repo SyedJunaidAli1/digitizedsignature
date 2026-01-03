@@ -8,6 +8,11 @@ import {
 } from "@/lib/util/constant";
 import Options from "@/app/components/Options";
 import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@/components/ui/button-group";
 
 const KeyboardSignature = () => {
   const [text, setText] = useState("");
@@ -184,10 +189,67 @@ const KeyboardSignature = () => {
   // It shows if: No text is entered OR User is currently typing
   const showKeyboard = text.length === 0 || isTyping;
 
+  // 1. EXPORT AS PNG
+  const exportPng = () => {
+    const canvas = pathCanvasRef.current;
+    if (!canvas) return;
+
+    // Create a temporary link
+    const link = document.createElement("a");
+    link.download = `signature-${text || "design"}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  // 2. EXPORT AS SVG
+  const exportSvg = () => {
+    const currentLayoutData = getKeyboardLayout(layout, includeNumbers);
+    const DRAW_OFFSET_Y = includeNumbers ? OFFSET_Y + 70 : OFFSET_Y;
+
+    // Get points identical to how canvas draws them
+    const points = text
+      .toUpperCase()
+      .split("")
+      .map((char) => currentLayoutData[char])
+      .filter((p) => !!p);
+
+    if (points.length < 2) return;
+
+    const pixelPoints = points.map((p) => ({
+      x: p.x * SPACING + OFFSET_X,
+      y: p.y * SPACING + DRAW_OFFSET_Y,
+    }));
+
+    // Reuse your generatePath function
+    const d = generatePath(pixelPoints, curveType);
+
+    // Create SVG Blob
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+        <path
+          d="${d}"
+          fill="none"
+          stroke="${color}"
+          stroke-width="${strokeWidth}"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    `.trim();
+
+    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `signature-${text || "design"}.svg`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-8 bg-background transition-colors duration-500">
+    <div className="flex flex-col items-center justify-start min-h-screen px-2 py-6 bg-background transition-colors duration-500">
       {/* Header & Options */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-12">
+      <div className="w-full max-w-4xl flex items-center justify-between mb-8">
         <h1 className="text-xl font-bold tracking-tight opacity-80">
           Digitized Signature
         </h1>
@@ -210,7 +272,7 @@ const KeyboardSignature = () => {
       </div>
 
       {/* Visible Themed Input */}
-      <div className="relative w-full max-w-md mb-16">
+      <div className="relative w-full max-w-md mb-8">
         <input
           type="text"
           value={text}
@@ -220,12 +282,13 @@ const KeyboardSignature = () => {
           autoFocus
         />
         {text.length > 0 && (
-          <button
+          <Button
             onClick={() => setText("")}
+            variant={"ghost"}
             className="absolute right-0 top-1/2 -translate-y-1/2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
@@ -258,6 +321,31 @@ const KeyboardSignature = () => {
             className="w-full h-full object-contain"
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {/* Added gap and margin */}
+        <ButtonGroup>
+          <Button className="cursor-pointer" onClick={exportSvg}>
+            Export Svg
+          </Button>
+          <ButtonGroupSeparator />
+          <Button className="cursor-pointer" onClick={exportPng}>
+            Export Png
+          </Button>
+        </ButtonGroup>
+        <Button
+          variant="outline"
+          asChild // Use asChild if using a Next.js Link
+        >
+          <a
+            href="https://github.com/your-username/your-repo"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View on Github
+          </a>
+        </Button>
       </div>
     </div>
   );
