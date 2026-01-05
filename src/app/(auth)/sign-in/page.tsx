@@ -9,7 +9,7 @@ const page = () => {
       provider: "google",
     });
   };
-  
+
   return (
     <>
       <main>

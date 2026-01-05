@@ -164,14 +164,17 @@ const KeyboardSignature = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
       className="relative min-h-screen bg-background px-2 py-6"
     >
       {/* header + options */}
-      <motion.div variants={itemVariants} className="flex flex-col items-center">
+      <motion.div
+        variants={itemVariants}
+        className="flex flex-col items-center"
+      >
         <div className="w-full max-w-4xl flex items-center justify-between mb-8">
           <h1 className="text-xl font-bold tracking-tight opacity-80">
             Digitized Signature
@@ -200,7 +203,10 @@ const KeyboardSignature = () => {
         </div>
 
         {/* input */}
-        <motion.div variants={itemVariants} className="relative w-full max-w-md mb-6">
+        <motion.div
+          variants={itemVariants}
+          className="relative w-full max-w-md mb-6"
+        >
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -220,7 +226,10 @@ const KeyboardSignature = () => {
       </motion.div>
 
       {/* keyboard + signature */}
-      <motion.div variants={itemVariants} className="flex justify-center mt-6 mb-2">
+      <motion.div
+        variants={itemVariants}
+        className="flex justify-center mt-6 mb-2"
+      >
         <div className="relative">
           <motion.div
             animate={{ opacity: showKeyboard ? 1 : 0 }}
