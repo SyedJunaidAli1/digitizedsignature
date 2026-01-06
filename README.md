@@ -54,7 +54,7 @@ No canvas hacks — just geometry + SVG.
 
 # 🚀 Getting Started
 ```
-git clone https://github.com/SyedJunaidAli1/digitizedsignature
+git clone https://github.com/SyedJunaidAli1/Digitizedsignature
 cd digitizedsignature
 bun install
 bun run dev
