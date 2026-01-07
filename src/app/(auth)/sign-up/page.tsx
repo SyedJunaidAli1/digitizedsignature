@@ -14,7 +14,7 @@ const page = () => {
     <>
       <main>
         <div className="flex items-center justify-center h-screen">
-          <section className="flex items-center justify-center border-2 border-secondary p-10 rounded-lg">
+          <section className="flex items-center justify-center border-2 border-secondary p-6 rounded-lg">
             <div className="px-4 py-6">
               <h2 className="text-lg mb-1">Sign up</h2>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
@@ -39,23 +39,6 @@ const page = () => {
                   <span>Google</span>
                 </Button>
               </div>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-6">
-                By continuing, you agree to our{" "}
-                <Link
-                  href="/terrms"
-                  className="underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
-                >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-300"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </p>
               <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p
                   className="
